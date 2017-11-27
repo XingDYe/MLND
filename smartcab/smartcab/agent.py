@@ -49,7 +49,7 @@ class LearningAgent(Agent):
 			self.aplha = 0
 		else:
 			# Use negative exponential e^(-at) decay function
-			self.epsilon = math.exp((-1)*self.alpha*self.t)
+			self.epsilon = math.exp((-0.001)*self.t)
 			self.t += 1 
 
 		return None
@@ -75,7 +75,7 @@ class LearningAgent(Agent):
 		# With the hand-engineered features, this learning process gets entirely negated.
 		
 		# Set 'state' as a tuple of relevant data for the agent        
-		state = (waypoint, inputs['light'], inputs['oncoming'], inputs['left'], inputs['right'])
+		state = (waypoint, inputs['light'], inputs['oncoming'], inputs['left'])
 		if state not in self.Q.keys():
 			self.Q[state] = self.template_Q.copy()
 		return state
@@ -90,10 +90,13 @@ class LearningAgent(Agent):
 		###########
 		# Calculate the maximum Q-value of all actions for a given state
 		
-		maxQ = None		
-		k, v = max(self.Q[state].iteritems(), key=lambda x:x[1])
-		maxQ = k
-		return maxQ
+		maxQ = max(self.Q[state].values())
+		maxQ_actions = []
+		for action, Q in self.Q[state].items():
+			if Q==maxQ:
+				maxQ_actions.append(action)
+
+		return maxQ, maxQ_actions
 
 
 
@@ -135,7 +138,8 @@ class LearningAgent(Agent):
 		if self.learning==False or self.epsilon>random.random():
 			action = random.choice(self.valid_actions)
 		else:
-			action = self.get_maxQ(state)
+			maxQ, maxQ_actions = self.get_maxQ(state)
+			action = random.choice(maxQ_actions)
 
 		return action
 
@@ -189,7 +193,7 @@ def run():
 	#   learning   - set to True to force the driving agent to use Q-learning
 	#    * epsilon - continuous value for the exploration factor, default is 1
 	#    * alpha   - continuous value for the learning rate, default is 0.5
-	agent = env.create_agent(LearningAgent, learning=True, alpha=0.001, epsilon=1.0)
+	agent = env.create_agent(LearningAgent, learning=True, alpha=0.5, epsilon=1.0)
 	
 	##############
 	# Follow the driving agent
