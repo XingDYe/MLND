@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[1]:
-
-
 import h5py 
 import os
 import cv2
@@ -14,6 +8,7 @@ import numpy as np
 import random
 import matplotlib.pylab as plt
 from sklearn.model_selection import train_test_split
+from keras import layers
 
 
 # Load npz file containing image arrays
@@ -36,7 +31,6 @@ print(K.image_data_format())
 ### Model Architecture
 ###
 ######################################
-from keras import layers
 
 nb_train_samples = len(X_TRAIN)
 nb_validation_samples = len(X_VAL)
@@ -101,8 +95,7 @@ def training():
                 epochs=epochs,
                 validation_data=validation_generator,
                 validation_steps=nb_validation_samples // batch_size)
-
-
+    
     model.save('gap_model.h5')
     return model, history
 
@@ -116,18 +109,21 @@ def plot_history(history):
     plt.plot(epochs, acc, 'blue', label='Training acc')
     plt.plot(epochs, val_acc, 'red', label='Validation acc')
     plt.title('Training and validation accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('epoch')
     plt.legend()
+    plt.savefig('loss_1.png')
     plt.figure()
     plt.plot(epochs, loss, 'blue', label='Training loss')
     plt.plot(epochs, val_loss, 'red', label='Validation loss')
     plt.title('Training and validation loss')
+    plt.ylabel('Losses')
+    plt.xlabel('epoch')
     plt.legend()
+    plt.savefig('loss_2.png')
     plt.show()
-    plt.savefig('loss.png')
-
-
-
-if __name__=='__main__':
-    # save the trained model and figure of losses
-    history = training()
-    plot_history(history)
+    
+# if __name__=='__main__':
+#     # save the trained model and figure 
+#     model, history = training()
+#     plot_history(history)
